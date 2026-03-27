@@ -15,16 +15,16 @@
         align-items: center;
         background: #f4f4f4;
         font-family: Arial, sans-serif;
+        overflow: hidden;
     }
 
+    /* 절벽 GIF 영역 */
     .cliff-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-bottom: 40px;
-        height: 250px;
-        width: 250px;
-        position: relative;
+        margin-bottom: 20px;
+        height: 260px;
     }
 
     .hanging-icon {
@@ -39,16 +39,18 @@
         100% { transform: rotate(8deg); }
     }
 
-    /* ✅ 벌점 100만 넘으면 떨어짐 */
-    .fall {
-        animation: fallDown 2s forwards ease-in;
+    /* 폭탄 팝업 */
+    .bomb {
+        position: fixed;
+        width: 250px;
+        display: none;
+        z-index: 9999;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 
-    @keyframes fallDown {
-        0% { transform: translateY(0) rotate(0deg); }
-        100% { transform: translateY(500px) rotate(720deg); }
-    }
-
+    /* 입력창 */
     .input-box {
         text-align: center;
     }
@@ -68,41 +70,59 @@
         font-weight: bold;
     }
 
-    /* ✅ 오른쪽 중앙 막대그래프 */
+    /* ✅ 세로 단일 그래프 영역 */
     .chart-box {
         position: fixed;
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
-        width: 150px;
+        width: 120px;
+        height: 400px;
         background: white;
         border: 1px solid #aaa;
-        padding: 15px;
+        padding: 10px;
         border-radius: 10px;
     }
 
-    .chart-title {
-        font-size: 14px;
+    .y-axis {
+        font-size: 12px;
+        color: #444;
         margin-bottom: 10px;
-        font-weight: bold;
-        text-align: center;
     }
 
-    .bar {
-        height: 20px;
+    .graph-frame {
+        height: 300px;
+        width: 60px;
+        border: 1px solid #aaa;
+        margin: 0 auto;
+        position: relative;
+        background: #fcecec;
+        display: flex;
+        align-items: flex-end;
+    }
+
+    /* ✅ 세로 막대 (하나만 존재) */
+    #bar {
+        width: 100%;
         background: #ff4d4d;
-        margin-bottom: 5px;
-        border-radius: 3px;
+        height: 0;
+        transition: height 0.5s ease;
     }
 </style>
 </head>
 <body>
 
+<!-- ✅ 절벽 GIF -->
 <div class="cliff-container">
-    <img id="gif" class="hanging-icon"
+    <img class="hanging-icon" id="cliffGif"
          src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lehsxJpCEmZlrqtwUj/giphy.gif">
 </div>
 
+<!-- ✅ 폭발 GIF -->
+<img class="bomb" id="bombGif"
+     src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHhhdXBqcnRxaGZpajMyaDN0cmY3ZXc4bng5MjZzbHBkZHEwYzJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XUFPGrX5Zis6Y/giphy.gif">
+
+<!-- ✅ 입력 UI -->
 <div class="input-box">
     <div style="font-size: 22px; margin-bottom: 10px;">선누에게 뭐라고 말했습니까?</div>
     <input type="text" id="userInput" placeholder="입력해주세요">
@@ -110,84 +130,99 @@
     <div class="total-score" id="totalScoreText">누적 벌점: 0점</div>
 </div>
 
+<!-- ✅ 세로 그래프 -->
 <div class="chart-box">
-    <div class="chart-title">누적 벌점 그래프</div>
-    <div id="chart"></div>
+    <div class="y-axis">
+        0<br>
+        -10만<br>
+        -20만<br>
+        -30만<br>
+        -40만<br>
+        -50만<br>
+        -60만<br>
+        -70만<br>
+        -80만<br>
+        -90만<br>
+        -100만
+    </div>
+    <div class="graph-frame">
+        <div id="bar"></div>
+    </div>
 </div>
 
+
 <script>
-/* ✅ 이전 벌점 불러오기 (localStorage) */
+/* ✅ 과거 벌점 불러오기 */
 let totalScore = Number(localStorage.getItem("sunhuScore")) || 0;
 
 const result = document.getElementById("resultText");
 const scoreDisplay = document.getElementById("totalScoreText");
-const gif = document.getElementById("gif");
+const bar = document.getElementById("bar");
+const cliffGif = document.getElementById("cliffGif");
+const bombGif = document.getElementById("bombGif");
 
-/* ✅ 초기 화면 점수 표시 */
+/* ✅ 초기 상태 로드 */
 scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
-renderChart();
+updateGraph();
 
-/* ✅ 입력 감지 */
+/* ✅ 입력 처리 */
 document.getElementById("userInput").addEventListener("input", () => {
     const text = document.getElementById("userInput").value.trim();
 
     let penalty = 0;
 
-    /* ✅ 0. 공란이면 아무것도 표시하지 않음 */
+    /* ✅ 공란이면 아무것도 출력 안함 */
     if (text === "") {
         result.textContent = "";
         return;
     }
 
-    /* ✅ 1. 뭐요 / 뭐가요 → -10만 */
+    /* ✅ 조건 우선순위 */
     if (text.includes("뭐요") || text.includes("뭐가요")) {
         penalty = -100000;
         result.textContent = "벌점 -10만점입니다";
         result.style.color = "red";
     }
-
-    /* ✅ 2. ㅋ → -5만 */
     else if (text.includes("ㅋ")) {
         penalty = -50000;
         result.textContent = "벌점 -5만점입니다";
         result.style.color = "red";
     }
-
-    /* ✅ 3. 나머지 → 에러 */
     else {
         result.textContent = "404 ERROR: 선누가 마상을 입었으니 벌점 측정 불가";
         result.style.color = "black";
         return;
     }
 
-    /* ✅ 누적 점수 저장 */
+    /* ✅ 누적 처리 + 저장 */
     totalScore += penalty;
     localStorage.setItem("sunhuScore", totalScore);
 
-    /* ✅ UI 갱신 */
     scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
 
-    /* ✅ 그래프 다시 생성 */
-    renderChart();
+    /* ✅ 그래프 업데이트 */
+    updateGraph();
 
-    /* ✅ 100만 넘으면 GIF 떨어짐 */
+    /* ✅ -100만 이하 → 폭발 */
     if (totalScore <= -1000000) {
-        gif.classList.add("fall");
+        triggerExplosion();
     }
 });
 
-/* ✅ 그래프 렌더링: 10만 = 1칸 */
-function renderChart() {
-    const chart = document.getElementById("chart");
-    chart.innerHTML = "";
 
-    const bars = Math.abs(totalScore / 100000);
+/* ✅ 세로 막대 업데이트 (1칸=10만) */
+function updateGraph() {
+    let bars = Math.abs(totalScore / 100000);
+    let heightPercent = Math.min(bars * 10, 100);  // 10칸 = 100%
 
-    for (let i = 0; i < bars; i++) {
-        const bar = document.createElement("div");
-        bar.classList.add("bar");
-        chart.appendChild(bar);
-    }
+    bar.style.height = heightPercent + "%";
+}
+
+
+/* ✅ 폭발 기능 */
+function triggerExplosion() {
+    cliffGif.style.display = "none";     // 캐릭터 숨김
+    bombGif.style.display = "block";     // 폭발 GIF 표시
 }
 </script>
 
