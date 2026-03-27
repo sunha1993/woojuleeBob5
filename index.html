@@ -4,6 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sunha Page</title>
+
 <style>
     body {
         margin: 0;
@@ -16,7 +17,6 @@
         font-family: Arial, sans-serif;
     }
 
-    /* 절벽에 매달린 아이콘 */
     .cliff-container {
         display: flex;
         justify-content: center;
@@ -28,71 +28,10 @@
     }
 
     .hanging-icon {
-        width: 100px;
+        width: 120px;
         animation: swing 2s ease-in-out infinite alternate;
         transform-origin: top center;
     }
 
-    /* 흔들리는 애니메이션 */
     @keyframes swing {
         0% { transform: rotate(-10deg); }
-        100% { transform: rotate(10deg); }
-    }
-
-    /* 입력 영역 */
-    .input-box {
-        text-align: center;
-    }
-
-    input {
-        padding: 10px;
-        width: 250px;
-        font-size: 16px;
-        border-radius: 8px;
-        border: 1px solid #999;
-        margin-top: 10px;
-    }
-
-    .result {
-        margin-top: 20px;
-        font-size: 20px;
-        font-weight: bold;
-    }
-</style>
-</head>
-<body>
-
-<div class="cliff-container">
-    <!-- 아이콘 이미지를 원하는 걸로 바꿔도 됨 -->
-    https://cdn-icons-png.flaticon.com/512/2738/2738894.png
-</div>
-
-<div class="input-box">
-    <div style="font-size: 22px; margin-bottom: 10px;">
-        선누에게 뭐라고 말했습니까?
-    </div>
-    <input type="text" id="userInput" placeholder="입력해주세요" oninput="checkInput()" />
-    <div class="result" id="resultText"></div>
-</div>
-
-<script>
-function checkInput() {
-    const text = document.getElementById("userInput").value;
-    const result = document.getElementById("resultText");
-
-    if (text.includes("ㅋ")) {
-        result.textContent = "벌점 -5만점입니다";
-        result.style.color = "red";
-    }
-    else if (text === "뭐요" || text === "뭐가요") {
-        result.textContent = "벌점 -10만점입니다";
-        result.style.color = "red";
-    }
-    else {
-        result.textContent = "";
-    }
-}
-</script>
-
-</body>
-</html>
