@@ -41,8 +41,7 @@
         position: fixed;
         width: 450px;
         display: none;
-        top: 50%;
-        left: 50%;
+        top: 50%; left: 50%;
         transform: translate(-50%, -50%);
         z-index: 9999;
     }
@@ -127,18 +126,18 @@
 </head>
 <body>
 
-<!-- ✅ 절벽 GIF (이미지로 표시) -->
+<!-- ✅ 절벽 GIF -->
 <div class="cliff-container">
-    <img id="cliffGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lehsxJpCEmZlrqtwUj/giphy.gif">
+    https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lehsxJpCEmZlrqtwUj/giphy.gif
 </div>
 
-<!-- ✅ 폭탄 GIF (이미지로 표시) -->
-<img id="bombGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHhhdXBqcnRxaGZpajMyaDN0cmY3ZXc4bng5MjZzbHBkZHEwYzJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XUFPGrX5Zis6Y/giphy.gif">
+<!-- ✅ 폭탄 GIF -->
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHhhdXBqcnRxaGZpajMyaDN0cmY3ZXc4bng5MjZzbHBkZHEwYzJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XUFPGrX5Zis6Y/giphy.gif
 
 <!-- ✅ 입력창 -->
 <div class="input-box">
-    <div style="font-size: 22px; margin-bottom: 10px;">선누에게 뭐라고 말했습니까?</div>
-    <input type="text" id="userInput" placeholder="입력해주세요">
+    <div style="font-size: 22px;">선누에게 뭐라고 말했습니까?</div>
+    <input type="text" id="userInput" placeholder="입력 후 Enter">
     <div class="result" id="resultText"></div>
     <div class="total-score" id="totalScoreText">누적 벌점: 0점</div>
 </div>
@@ -165,47 +164,44 @@
 /* ✅ 누적 점수 로드 */
 let totalScore = Number(localStorage.getItem("sunhuScore")) || 0;
 
-const userInput = document.getElementById("userInput");
-const result = document.getElementById("resultText");
-const scoreDisplay = document.getElementById("totalScoreText");
-const bar = document.getElementById("bar");
-const helpBtn = document.getElementById("helpBtn");
-const pwInput = document.getElementById("pwInput");
-const pwMessage = document.getElementById("pwMessage");
-const cliffGif = document.getElementById("cliffGif");
-const bombGif = document.getElementById("bombGif");
+const userInput   = document.getElementById("userInput");
+const result      = document.getElementById("resultText");
+const scoreDisplay= document.getElementById("totalScoreText");
+const bar         = document.getElementById("bar");
+const helpBtn     = document.getElementById("helpBtn");
+const pwInput     = document.getElementById("pwInput");
+const pwMessage   = document.getElementById("pwMessage");
+const cliffGif    = document.getElementById("cliffGif");
+const bombGif     = document.getElementById("bombGif");
 
 /* ✅ 상점 단어 리스트 */
 const positiveWords = [
-    // 점약 관련 (공백/변형 전부 대응)
-    "점약",
-
-    // 감사(존댓말)
-    "감사합니다","고맙습니다","감사해요","고마워요",
+    "점약","감사합니다","고맙습니다","감사해요","고마워요",
     "정말 감사합니다","진심으로 감사합니다","너무 감사합니다","덕분이에요",
-
-    // 칭찬
     "잘하셨어요","최고세요","멋지세요","대단하세요","훌륭하세요",
     "예쁘세요","귀여우세요","똑똑하세요","현명하세요","착하시네요",
     "기특하세요","친절하세요","센스있으세요","존경합니다",
     "대박이에요","인정합니다","베스트예요","완벽하세요","훌륭하십니다",
-
-    // ✅ 추가 요청 반영
-    "미인", "예뻐요", "예쁘다", "짱"
+    "미인","예뻐요","예쁘다","짱"
 ];
 
-
-/* ✅ 화면 초기 반영 */
+/* ✅ 초기 반영 */
 updateGraph();
 updateScoreText();
 
-/* ✅ 입력 처리 */
-userInput.addEventListener("input", () => {
-    const text = userInput.value.trim();
-    if (text === "") { result.textContent = ""; return; }
+/* ✅ ✅ 이제 Enter를 눌렀을 때만 실행됨 */
+userInput.addEventListener("keypress", (e) => {
 
-    let penalty = 0;
+    if (e.key !== "Enter") return;
+
+    const text = userInput.value.trim();
+    if (text === "") {
+        result.textContent = "";
+        return;
+    }
+
     let isPositive = positiveWords.some(word => text.includes(word));
+    let penalty = 0;
 
     if (isPositive) {
         penalty = +100000;
@@ -223,7 +219,8 @@ userInput.addEventListener("input", () => {
         result.style.color = "red";
     }
     else {
-        result.textContent = "이 말을 들었을 때 선누가 마상일지 기분 좋을지는 알아서 생각하세요";
+        result.textContent =
+        "이 말을 들었을 때 선누가 마상일지 기분 좋을지는 알아서 생각하세요";
         result.style.color = "black";
         return;
     }
@@ -246,7 +243,7 @@ function updateScoreText() {
     }
 }
 
-/* ✅ 그래프 (음수=빨강, 양수=파랑) */
+/* ✅ 그래프 색 전환 */
 function updateGraph() {
     let absScore = Math.min(Math.abs(totalScore), 1000000);
     let percent = absScore / 1000000 * 100;
@@ -270,20 +267,24 @@ helpBtn.addEventListener("click", () => {
 
 /* ✅ PASSWORD 처리 */
 pwInput.addEventListener("keypress", (e) => {
-    if (e.key === "Enter") {
-        if (pwInput.value === "bonasona") {
-            totalScore = 0;
-            localStorage.setItem("sunhuScore", 0);
-            pwMessage.textContent = "초기화 완료!";
-            updateScoreText();
-            updateGraph();
-            bombGif.style.display = "none";
-            cliffGif.style.display = "block";
-        } else {
-            pwMessage.textContent = "한턱 쏘세요";
-        }
-        pwInput.value = "";
+    if (e.key !== "Enter") return;
+
+    if (pwInput.value === "bonasona") {
+        totalScore = 0;
+        localStorage.setItem("sunhuScore", 0);
+
+        pwMessage.textContent = "초기화 완료!";
+        updateScoreText();
+        updateGraph();
+
+        bombGif.style.display = "none";
+        cliffGif.style.display = "block";
     }
+    else {
+        pwMessage.textContent = "한턱 쏘세요";
+    }
+
+    pwInput.value = "";
 });
 
 /* ✅ blur → 버튼 복귀 + 메시지 제거 */
