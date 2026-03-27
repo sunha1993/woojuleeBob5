@@ -24,11 +24,11 @@
         margin-bottom: 40px;
         height: 250px;
         width: 250px;
-        position: relative;
     }
 
+    /* ✅ 흔들리는 애니메이션 */
     .hanging-icon {
-        width: 160px;
+        width: 200px;
         animation: swing 2s ease-in-out infinite alternate;
         transform-origin: top center;
     }
@@ -46,39 +46,3 @@
         padding: 10px;
         width: 260px;
         font-size: 16px;
-        border-radius: 8px;
-        border: 1px solid #999;
-        margin-top: 10px;
-    }
-
-    .result, .total-score {
-        margin-top: 15px;
-        font-size: 20px;
-        font-weight: bold;
-    }
-
-    .total-score {
-        color: #333;
-    }
-</style>
-</head>
-<body>
-
-<div class="cliff-container">
-    <img class="hanging-icon" 
-         src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lehsxJpCEmZlrqtwUj/giphy.gif">
-</div>
-
-<div class="input-box">
-    <div style="font-size: 22px; margin-bottom: 10px;">
-        선누에게 뭐라고 말했습니까?
-    </div>
-    <input type="text" id="userInput" placeholder="입력해주세요" />
-    <div class="result" id="resultText"></div>
-    <div class="total-score" id="totalScoreText">누적 벌점: 0점</div>
-</div>
-
-<script>
-let totalScore = 0;
-
-document.getElementById("userInput").addEventListener("input", () => {
