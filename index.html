@@ -18,20 +18,19 @@
         overflow: hidden;
     }
 
-    /* 절벽 GIF 영역 */
+    /* 절벽 GIF */
     .cliff-container {
         display: flex;
         justify-content: center;
         align-items: center;
-        margin-bottom: 20px;
         height: 260px;
+        margin-bottom: 20px;
     }
 
     .hanging-icon {
-        width: 200px;
+        width: 220px;
         animation: swing 2s ease-in-out infinite alternate;
         transform-origin: top center;
-        position: relative;
     }
 
     @keyframes swing {
@@ -39,18 +38,18 @@
         100% { transform: rotate(8deg); }
     }
 
-    /* 폭탄 팝업 */
+    /* 폭탄 GIF */
     .bomb {
         position: fixed;
-        width: 250px;
+        width: 400px;              /* ✅ 더 크게 */
         display: none;
-        z-index: 9999;
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
+        z-index: 9999;
     }
 
-    /* 입력창 */
+    /* 입력 */
     .input-box {
         text-align: center;
     }
@@ -58,54 +57,57 @@
     input {
         padding: 10px;
         width: 260px;
-        font-size: 16px;
+        margin-top: 10px;
         border-radius: 8px;
         border: 1px solid #999;
-        margin-top: 10px;
+        font-size: 16px;
     }
 
     .result, .total-score {
-        margin-top: 15px;
         font-size: 20px;
         font-weight: bold;
+        margin-top: 15px;
     }
 
-    /* ✅ 세로 단일 그래프 영역 */
-    .chart-box {
+    /* ✅ 세로 그래프 박스 */
+    .chart-container {
         position: fixed;
         right: 20px;
         top: 50%;
         transform: translateY(-50%);
-        width: 120px;
-        height: 400px;
-        background: white;
-        border: 1px solid #aaa;
-        padding: 10px;
-        border-radius: 10px;
-    }
-
-    .y-axis {
-        font-size: 12px;
-        color: #444;
-        margin-bottom: 10px;
-    }
-
-    .graph-frame {
-        height: 300px;
-        width: 60px;
-        border: 1px solid #aaa;
-        margin: 0 auto;
-        position: relative;
-        background: #fcecec;
         display: flex;
         align-items: flex-end;
+        gap: 10px;
+    }
+
+    /* ✅ y축 눈금 */
+    .y-axis {
+        display: flex;
+        flex-direction: column-reverse; /* 아래가 10만, 위가 100만 */
+        justify-content: space-between;
+        height: 300px;
+        font-size: 13px;
+        color: #444;
+        text-align: right;
+        padding-right: 5px;
+    }
+
+    /* ✅ 그래프 틀 */
+    .graph-frame {
+        width: 60px;
+        height: 300px;
+        border: 1px solid #aaa;
+        background: #ffe5e5;
+        display: flex;
+        align-items: flex-end;
+        position: relative;
     }
 
     /* ✅ 세로 막대 (하나만 존재) */
     #bar {
         width: 100%;
-        background: #ff4d4d;
         height: 0;
+        background: #ff4d4d;
         transition: height 0.5s ease;
     }
 </style>
@@ -114,15 +116,13 @@
 
 <!-- ✅ 절벽 GIF -->
 <div class="cliff-container">
-    <img class="hanging-icon" id="cliffGif"
-         src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lehsxJpCEmZlrqtwUj/giphy.gif">
+    https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lehsxJpCEmZlrqtwUj/giphy.gif
 </div>
 
-<!-- ✅ 폭발 GIF -->
-<img class="bomb" id="bombGif"
-     src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHhhdXBqcnRxaGZpajMyaDN0cmY3ZXc4bng5MjZzbHBkZHEwYzJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XUFPGrX5Zis6Y/giphy.gif">
+<!-- ✅ 폭탄 GIF -->
+https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHhhdXBqcnRxaGZpajMyaDN0cmY3ZXc4bng5MjZzbHBkZHEwYzJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XUFPGrX5Zis6Y/giphy.gif
 
-<!-- ✅ 입력 UI -->
+<!-- ✅ 입력 영역 -->
 <div class="input-box">
     <div style="font-size: 22px; margin-bottom: 10px;">선누에게 뭐라고 말했습니까?</div>
     <input type="text" id="userInput" placeholder="입력해주세요">
@@ -130,29 +130,29 @@
     <div class="total-score" id="totalScoreText">누적 벌점: 0점</div>
 </div>
 
-<!-- ✅ 세로 그래프 -->
-<div class="chart-box">
+<!-- ✅ 오른쪽 세로 그래프 -->
+<div class="chart-container">
     <div class="y-axis">
-        0<br>
-        -10만<br>
-        -20만<br>
-        -30만<br>
-        -40만<br>
-        -50만<br>
-        -60만<br>
-        -70만<br>
-        -80만<br>
-        -90만<br>
-        -100만
+        <div>100만</div>
+        <div>90만</div>
+        <div>80만</div>
+        <div>70만</div>
+        <div>60만</div>
+        <div>50만</div>
+        <div>40만</div>
+        <div>30만</div>
+        <div>20만</div>
+        <div>10만</div>
+        <div>0</div>
     </div>
+
     <div class="graph-frame">
         <div id="bar"></div>
     </div>
 </div>
 
-
 <script>
-/* ✅ 과거 벌점 불러오기 */
+/* ✅ 누적 점수 불러오기 */
 let totalScore = Number(localStorage.getItem("sunhuScore")) || 0;
 
 const result = document.getElementById("resultText");
@@ -161,17 +161,15 @@ const bar = document.getElementById("bar");
 const cliffGif = document.getElementById("cliffGif");
 const bombGif = document.getElementById("bombGif");
 
-/* ✅ 초기 상태 로드 */
 scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
 updateGraph();
 
 /* ✅ 입력 처리 */
 document.getElementById("userInput").addEventListener("input", () => {
     const text = document.getElementById("userInput").value.trim();
-
     let penalty = 0;
 
-    /* ✅ 공란이면 아무것도 출력 안함 */
+    /* ✅ 공란 → 아무 메시지 없음 */
     if (text === "") {
         result.textContent = "";
         return;
@@ -194,35 +192,31 @@ document.getElementById("userInput").addEventListener("input", () => {
         return;
     }
 
-    /* ✅ 누적 처리 + 저장 */
+    /* ✅ 누적 */
     totalScore += penalty;
     localStorage.setItem("sunhuScore", totalScore);
 
     scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
 
-    /* ✅ 그래프 업데이트 */
     updateGraph();
 
-    /* ✅ -100만 이하 → 폭발 */
+    /* ✅ -100만 도달 → 폭발 */
     if (totalScore <= -1000000) {
         triggerExplosion();
     }
 });
 
-
-/* ✅ 세로 막대 업데이트 (1칸=10만) */
+/* ✅ 막대 그래프 업데이트 (절대값 사용하여 위로 성장) */
 function updateGraph() {
-    let bars = Math.abs(totalScore / 100000);
-    let heightPercent = Math.min(bars * 10, 100);  // 10칸 = 100%
-
-    bar.style.height = heightPercent + "%";
+    let absScore = Math.abs(totalScore);
+    let percent = Math.min(absScore / 1000000 * 100, 100);
+    bar.style.height = percent + "%";
 }
 
-
-/* ✅ 폭발 기능 */
+/* ✅ 폭발 */
 function triggerExplosion() {
-    cliffGif.style.display = "none";     // 캐릭터 숨김
-    bombGif.style.display = "block";     // 폭발 GIF 표시
+    cliffGif.style.display = "none";
+    bombGif.style.display = "block";
 }
 </script>
 
