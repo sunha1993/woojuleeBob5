@@ -44,3 +44,54 @@
 
     input {
         padding: 10px;
+        width: 250px;
+        font-size: 16px;
+        border-radius: 8px;
+        border: 1px solid #999;
+        margin-top: 10px;
+    }
+
+    .result {
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: bold;
+    }
+</style>
+</head>
+<body>
+
+<div class="cliff-container">
+    <!-- ✅ GIF 애니메이션 표시 -->
+    <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdT1n/lehsxJpCEmZlrqtwUj/giphy.gif"
+         class="hanging-icon" />
+</div>
+
+<div class="input-box">
+    <div style="font-size: 22px; margin-bottom: 10px;">
+        선누에게 뭐라고 말했습니까?
+    </div>
+    <input type="text" id="userInput" placeholder="입력해주세요" oninput="checkInput()" />
+    <div class="result" id="resultText"></div>
+</div>
+
+<script>
+function checkInput() {
+    const text = document.getElementById("userInput").value.trim();
+    const result = document.getElementById("resultText");
+
+    if (text.includes("ㅋ")) {
+        result.textContent = "벌점 -5만점입니다";
+        result.style.color = "red";
+    }
+    else if (text === "뭐요" || text === "뭐가요") {
+        result.textContent = "벌점 -10만점입니다";
+        result.style.color = "red";
+    }
+    else {
+        result.textContent = "";
+    }
+}
+</script>
+
+</body>
+</html>
