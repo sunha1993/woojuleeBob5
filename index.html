@@ -267,11 +267,13 @@ pwInput.addEventListener("keypress", (e) => {
     }
 });
 
-/* ✅ 포커스 벗어나면 자동 복귀 */
+/* ✅ 포커스 벗어나면 자동 복귀 + 메시지 사라짐 */
 pwInput.addEventListener("blur", () => {
     pwInput.style.display = "none";
     helpBtn.style.display = "block";
+    pwMessage.textContent = "";   // ✅ ← 한턱쏘세요/초기화완료 둘 다 사라지게
 });
+
 </script>
 
 </body>
