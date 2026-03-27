@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sunha Page</title>
 
 <style>
@@ -26,7 +26,6 @@
         height: 260px;
         margin-bottom: 20px;
     }
-
     #cliffGif {
         width: 220px;
         animation: swing 2s ease-in-out infinite alternate;
@@ -53,7 +52,6 @@
     .input-box {
         text-align: center;
     }
-
     input {
         padding: 10px;
         width: 260px;
@@ -62,7 +60,6 @@
         border: 1px solid #999;
         font-size: 16px;
     }
-
     .result, .total-score {
         font-size: 20px;
         font-weight: bold;
@@ -79,17 +76,19 @@
         gap: 10px;
     }
 
+    /* ✅ 눈금은 정상 방향으로 위→아래 */
     .y-axis {
         height: 300px;
         display: flex;
-        flex-direction: column-reverse;
+        flex-direction: column;
         justify-content: space-between;
-        padding-right: 5px;
         text-align: right;
+        padding-right: 5px;
         font-size: 14px;
         color: #444;
     }
 
+    /* ✅ 막대는 아래에서 시작 (flex-end) */
     .graph-frame {
         width: 70px;
         height: 300px;
@@ -121,6 +120,17 @@
     #pwInput {
         display: none;
         margin-top: 10px;
+        padding: 8px;
+        border-radius: 6px;
+        border: 1px solid #666;
+    }
+
+    /* ✅ PASSWORD 실패/성공 메시지용 */
+    #pwMessage {
+        margin-top: 10px;
+        font-size: 18px;
+        font-weight: bold;
+        color: black;
     }
 </style>
 </head>
@@ -137,12 +147,12 @@
 <!-- ✅ 입력 영역 -->
 <div class="input-box">
     <div style="font-size: 22px; margin-bottom: 10px;">선누에게 뭐라고 말했습니까?</div>
-    <input type="text" id="userInput" placeholder="입력해주세요" />
+    <input type="text" id="userInput" placeholder="입력해주세요">
     <div class="result" id="resultText"></div>
     <div class="total-score" id="totalScoreText">누적 벌점: 0점</div>
 </div>
 
-<!-- ✅ 세로 그래프 -->
+<!-- ✅ 세로 그래프 (0 → 100만 정상 표시) -->
 <div class="chart-container">
     <div class="y-axis">
         <div>100만</div>
@@ -163,28 +173,31 @@
     </div>
 </div>
 
-<!-- ✅ 살려주세요 버튼 + 패스워드 입력 -->
+<!-- ✅ 살려주세요 버튼 & 패스워드 입력창 -->
 <button id="helpBtn">살려주세요</button>
-<input id="pwInput" type="text" placeholder="PASSWORD" />
+<input id="pwInput" type="text" placeholder="PASSWORD">
+
+<!-- ✅ PASSWORD 성공/실패 메시지 -->
+<div id="pwMessage"></div>
 
 <script>
-/* ✅ 누적 점수 로드 */
 let totalScore = Number(localStorage.getItem("sunhuScore")) || 0;
 
-const userInput = document.getElementById("userInput");
-const result = document.getElementById("resultText");
-const scoreDisplay = document.getElementById("totalScoreText");
-const bar = document.getElementById("bar");
-const cliffGif = document.getElementById("cliffGif");
-const bombGif = document.getElementById("bombGif");
-const helpBtn = document.getElementById("helpBtn");
-const pwInput = document.getElementById("pwInput");
+const userInput   = document.getElementById("userInput");
+const result      = document.getElementById("resultText");
+const scoreDisplay= document.getElementById("totalScoreText");
+const bar         = document.getElementById("bar");
+const cliffGif    = document.getElementById("cliffGif");
+const bombGif     = document.getElementById("bombGif");
+const helpBtn     = document.getElementById("helpBtn");
+const pwInput     = document.getElementById("pwInput");
+const pwMessage   = document.getElementById("pwMessage");
 
-/* ✅ 초기 화면 */
+/* ✅ 초기값 반영 */
 scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
 updateGraph();
 
-/* ✅ 입력창 이벤트 */
+/* ✅ 입력 처리 */
 userInput.addEventListener("input", () => {
     const text = userInput.value.trim();
     if (text === "") { result.textContent = ""; return; }
@@ -195,13 +208,11 @@ userInput.addEventListener("input", () => {
         penalty = -100000;
         result.textContent = "벌점 -10만점입니다";
         result.style.color = "red";
-    } 
-    else if (text.includes("ㅋ")) {
+    } else if (text.includes("ㅋ")) {
         penalty = -50000;
         result.textContent = "벌점 -5만점입니다";
         result.style.color = "red";
-    } 
-    else {
+    } else {
         result.textContent = "404 ERROR: 선누가 마상을 입었으니 벌점 측정 불가";
         result.style.color = "black";
         return;
@@ -211,15 +222,12 @@ userInput.addEventListener("input", () => {
     localStorage.setItem("sunhuScore", totalScore);
 
     scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
-
     updateGraph();
 
-    if (totalScore <= -1000000) {
-        triggerExplosion();
-    }
+    if (totalScore <= -1000000) triggerExplosion();
 });
 
-/* ✅ 절대값 기반 그래프 */
+/* ✅ 절대값 기반 위로 성장 그래프 */
 function updateGraph() {
     const absScore = Math.min(Math.abs(totalScore), 1000000);
     const percent = absScore / 1000000 * 100;
@@ -232,29 +240,29 @@ function triggerExplosion() {
     bombGif.style.display = "block";
 }
 
-/* ✅ 살려주세요 버튼 → PASSWORD 입력창 */
+/* ✅ 살려주세요 → PASSWORD 입력창 */
 helpBtn.addEventListener("click", () => {
     helpBtn.style.display = "none";
     pwInput.style.display = "block";
     pwInput.focus();
 });
 
-/* ✅ PASSWORD 입력 처리 */
+/* ✅ PASSWORD 입력 */
 pwInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
+
         if (pwInput.value === "bonasona") {
             totalScore = 0;
             localStorage.setItem("sunhuScore", 0);
             updateGraph();
             scoreDisplay.textContent = "누적 벌점: 0점";
-            result.textContent = "초기화 완료!";
-            result.style.color = "black";
+            pwMessage.textContent = "초기화 완료!";
             bombGif.style.display = "none";
             cliffGif.style.display = "block";
         } else {
-            result.textContent = "한턱 쏘세요";
-            result.style.color = "black";
+            pwMessage.textContent = "한턱 쏘세요";
         }
+
         pwInput.value = "";
     }
 });
