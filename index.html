@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Sunha Page</title>
 
 <style>
@@ -26,6 +26,7 @@
         height: 260px;
         margin-bottom: 20px;
     }
+
     #cliffGif {
         width: 220px;
         animation: swing 2s ease-in-out infinite alternate;
@@ -48,10 +49,11 @@
         z-index: 9999;
     }
 
-    /* 입력 */
+    /* 입력 UI */
     .input-box {
         text-align: center;
     }
+
     input {
         padding: 10px;
         width: 260px;
@@ -60,13 +62,14 @@
         border: 1px solid #999;
         font-size: 16px;
     }
+
     .result, .total-score {
         font-size: 20px;
         font-weight: bold;
         margin-top: 15px;
     }
 
-    /* 그래프 전체 */
+    /* 그래프 컨테이너 */
     .chart-container {
         position: fixed;
         right: 20px;
@@ -76,31 +79,29 @@
         gap: 10px;
     }
 
-    /* y축 눈금 */
     .y-axis {
         height: 300px;
         display: flex;
         flex-direction: column-reverse;
         justify-content: space-between;
-        text-align: right;
         padding-right: 5px;
+        text-align: right;
         font-size: 14px;
         color: #444;
     }
 
-    /* 그래프 박스 */
     .graph-frame {
         width: 70px;
         height: 300px;
         border: 1px solid #aaa;
         background: #ffe5e5;
         display: flex;
-        align-items: flex-end; /* 아래에서 자람 */
+        align-items: flex-end;
     }
 
     #bar {
         width: 100%;
-        height: 0;
+        height: 0%;
         background: #ff4d4d;
         transition: height 0.5s ease;
     }
@@ -133,10 +134,10 @@
 <!-- ✅ 폭탄 GIF -->
 <img id="bombGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHhhdXBqcnRxaGZpajMyaDN0cmY3ZXc4bng5MjZzbHBkZHEwYzJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XUFPGrX5Zis6Y/giphy.gif">
 
-<!-- ✅ 입력창 -->
+<!-- ✅ 입력 영역 -->
 <div class="input-box">
     <div style="font-size: 22px; margin-bottom: 10px;">선누에게 뭐라고 말했습니까?</div>
-    <input type="text" id="userInput" placeholder="입력해주세요">
+    <input type="text" id="userInput" placeholder="입력해주세요" />
     <div class="result" id="resultText"></div>
     <div class="total-score" id="totalScoreText">누적 벌점: 0점</div>
 </div>
@@ -162,11 +163,12 @@
     </div>
 </div>
 
-<!-- ✅ 살려주세요 버튼 -->
+<!-- ✅ 살려주세요 버튼 + 패스워드 입력 -->
 <button id="helpBtn">살려주세요</button>
-<input id="pwInput" type="text" placeholder="PASSWORD">
+<input id="pwInput" type="text" placeholder="PASSWORD" />
 
 <script>
+/* ✅ 누적 점수 로드 */
 let totalScore = Number(localStorage.getItem("sunhuScore")) || 0;
 
 const userInput = document.getElementById("userInput");
@@ -178,11 +180,11 @@ const bombGif = document.getElementById("bombGif");
 const helpBtn = document.getElementById("helpBtn");
 const pwInput = document.getElementById("pwInput");
 
-/* ✅ 초기 설정 */
+/* ✅ 초기 화면 */
 scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
 updateGraph();
 
-/* ✅ 입력 이벤트 */
+/* ✅ 입력창 이벤트 */
 userInput.addEventListener("input", () => {
     const text = userInput.value.trim();
     if (text === "") { result.textContent = ""; return; }
@@ -193,12 +195,12 @@ userInput.addEventListener("input", () => {
         penalty = -100000;
         result.textContent = "벌점 -10만점입니다";
         result.style.color = "red";
-    }
+    } 
     else if (text.includes("ㅋ")) {
         penalty = -50000;
         result.textContent = "벌점 -5만점입니다";
         result.style.color = "red";
-    }
+    } 
     else {
         result.textContent = "404 ERROR: 선누가 마상을 입었으니 벌점 측정 불가";
         result.style.color = "black";
@@ -207,21 +209,24 @@ userInput.addEventListener("input", () => {
 
     totalScore += penalty;
     localStorage.setItem("sunhuScore", totalScore);
+
     scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
 
     updateGraph();
 
-    if (totalScore <= -1000000) triggerExplosion();
+    if (totalScore <= -1000000) {
+        triggerExplosion();
+    }
 });
 
-/* ✅ 그래프 업데이트 (절대값 기반) */
+/* ✅ 절대값 기반 그래프 */
 function updateGraph() {
     const absScore = Math.min(Math.abs(totalScore), 1000000);
     const percent = absScore / 1000000 * 100;
     bar.style.height = percent + "%";
 }
 
-/* ✅ 폭발 함수 */
+/* ✅ 폭발 */
 function triggerExplosion() {
     cliffGif.style.display = "none";
     bombGif.style.display = "block";
@@ -231,33 +236,36 @@ function triggerExplosion() {
 helpBtn.addEventListener("click", () => {
     helpBtn.style.display = "none";
     pwInput.style.display = "block";
+    pwInput.focus();
 });
 
 /* ✅ PASSWORD 입력 처리 */
 pwInput.addEventListener("keypress", (e) => {
     if (e.key === "Enter") {
-
         if (pwInput.value === "bonasona") {
             totalScore = 0;
             localStorage.setItem("sunhuScore", 0);
-
             updateGraph();
             scoreDisplay.textContent = "누적 벌점: 0점";
             result.textContent = "초기화 완료!";
             result.style.color = "black";
-
             bombGif.style.display = "none";
             cliffGif.style.display = "block";
-
         } else {
             result.textContent = "한턱 쏘세요";
             result.style.color = "black";
         }
-
         pwInput.value = "";
     }
+});
+
+/* ✅ 포커스 벗어나면 자동 복귀 */
+pwInput.addEventListener("blur", () => {
+    pwInput.style.display = "none";
+    helpBtn.style.display = "block";
 });
 </script>
 
 </body>
 </html>
+
