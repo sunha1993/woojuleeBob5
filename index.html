@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sunha Page</title>
 
 <style>
@@ -24,18 +24,29 @@
         margin-bottom: 40px;
         height: 250px;
         width: 250px;
+        position: relative;
     }
 
-    /* ✅ 흔들리는 애니메이션 */
     .hanging-icon {
         width: 200px;
         animation: swing 2s ease-in-out infinite alternate;
         transform-origin: top center;
+        position: relative;
     }
 
     @keyframes swing {
         0% { transform: rotate(-8deg); }
         100% { transform: rotate(8deg); }
+    }
+
+    /* ✅ 벌점 100만 넘으면 떨어짐 */
+    .fall {
+        animation: fallDown 2s forwards ease-in;
+    }
+
+    @keyframes fallDown {
+        0% { transform: translateY(0) rotate(0deg); }
+        100% { transform: translateY(500px) rotate(720deg); }
     }
 
     .input-box {
@@ -57,63 +68,127 @@
         font-weight: bold;
     }
 
-    .total-score {
-        color: #333;
+    /* ✅ 오른쪽 중앙 막대그래프 */
+    .chart-box {
+        position: fixed;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 150px;
+        background: white;
+        border: 1px solid #aaa;
+        padding: 15px;
+        border-radius: 10px;
+    }
+
+    .chart-title {
+        font-size: 14px;
+        margin-bottom: 10px;
+        font-weight: bold;
+        text-align: center;
+    }
+
+    .bar {
+        height: 20px;
+        background: #ff4d4d;
+        margin-bottom: 5px;
+        border-radius: 3px;
     }
 </style>
 </head>
 <body>
 
 <div class="cliff-container">
-    <!-- ✅ 너가 준 GIF + 흔들림 적용 -->
-    <img class="hanging-icon" 
-         src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdT1n/lehsxJpCEmZlrqtwUj/giphy.gif" />
+    <img id="gif" class="hanging-icon"
+         src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lehsxJpCEmZlrqtwUj/giphy.gif">
 </div>
 
 <div class="input-box">
-    <div style="font-size: 22px; margin-bottom: 10px;">
-        선누에게 뭐라고 말했습니까?
-    </div>
-    <input type="text" id="userInput" placeholder="입력해주세요" />
+    <div style="font-size: 22px; margin-bottom: 10px;">선누에게 뭐라고 말했습니까?</div>
+    <input type="text" id="userInput" placeholder="입력해주세요">
     <div class="result" id="resultText"></div>
     <div class="total-score" id="totalScoreText">누적 벌점: 0점</div>
 </div>
 
-<script>
-let totalScore = 0;
+<div class="chart-box">
+    <div class="chart-title">누적 벌점 그래프</div>
+    <div id="chart"></div>
+</div>
 
+<script>
+/* ✅ 이전 벌점 불러오기 (localStorage) */
+let totalScore = Number(localStorage.getItem("sunhuScore")) || 0;
+
+const result = document.getElementById("resultText");
+const scoreDisplay = document.getElementById("totalScoreText");
+const gif = document.getElementById("gif");
+
+/* ✅ 초기 화면 점수 표시 */
+scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
+renderChart();
+
+/* ✅ 입력 감지 */
 document.getElementById("userInput").addEventListener("input", () => {
     const text = document.getElementById("userInput").value.trim();
-    const result = document.getElementById("resultText");
-    const scoreDisplay = document.getElementById("totalScoreText");
 
     let penalty = 0;
 
-    // ✅ 최우선: 뭐요 / 뭐가요
+    /* ✅ 0. 공란이면 아무것도 표시하지 않음 */
+    if (text === "") {
+        result.textContent = "";
+        return;
+    }
+
+    /* ✅ 1. 뭐요 / 뭐가요 → -10만 */
     if (text.includes("뭐요") || text.includes("뭐가요")) {
         penalty = -100000;
         result.textContent = "벌점 -10만점입니다";
         result.style.color = "red";
     }
-    // ✅ 두 번째: ㅋ 가 하나라도 있으면
+
+    /* ✅ 2. ㅋ → -5만 */
     else if (text.includes("ㅋ")) {
         penalty = -50000;
         result.textContent = "벌점 -5만점입니다";
         result.style.color = "red";
     }
-    // ✅ 아무것도 해당 안 될 때
+
+    /* ✅ 3. 나머지 → 에러 */
     else {
         result.textContent = "404 ERROR: 선누가 마상을 입었으니 벌점 측정 불가";
         result.style.color = "black";
-        return;  // 점수 누적하지 않음
+        return;
     }
 
-    // ✅ 점수 누적
+    /* ✅ 누적 점수 저장 */
     totalScore += penalty;
+    localStorage.setItem("sunhuScore", totalScore);
 
-    // ✅ 누적 점수 갱신
+    /* ✅ UI 갱신 */
     scoreDisplay.textContent = `누적 벌점: ${totalScore}점`;
+
+    /* ✅ 그래프 다시 생성 */
+    renderChart();
+
+    /* ✅ 100만 넘으면 GIF 떨어짐 */
+    if (totalScore <= -1000000) {
+        gif.classList.add("fall");
+    }
 });
+
+/* ✅ 그래프 렌더링: 10만 = 1칸 */
+function renderChart() {
+    const chart = document.getElementById("chart");
+    chart.innerHTML = "";
+
+    const bars = Math.abs(totalScore / 100000);
+
+    for (let i = 0; i < bars; i++) {
+        const bar = document.createElement("div");
+        bar.classList.add("bar");
+        chart.appendChild(bar);
+    }
+}
 </script>
 
 </body>
