@@ -126,15 +126,15 @@
 </head>
 <body>
 
-<!-- ✅ 절벽 GIF (이미지로 표시됨) -->
+<!-- ✅ 절벽 GIF -->
 <div class="cliff-container">
-    <img id="cliffGif" 
-         src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/lehsxJpCEmZlrqtwUj/giphy.gif">
+    <img id="cliffGif"
+         src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExcWl2aHJ5NWEyYXM2Yjd3ZXFld3FmczF3MDVubGpjY29haWJ4NmkyeCZlcD12MV9naWZzX3NlYXJjaCZjdT1n/lehsxJpCEmZlrqtwUj/giphy.gif">
 </div>
 
-<!-- ✅ 폭탄 GIF (이미지로 표시됨) -->
-<img id="bombGif" 
-     src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHhhdXBqcnRxaGZpajMyaDN0cmY3ZXc4bng5MjZzbHBkZHEwYzJsOCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/XUFPGrX5Zis6Y/giphy.gif">
+<!-- ✅ 폭탄 GIF -->
+<img id="bombGif"
+     src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMHhhdXBqcnRxaGZpajMyaDN0cmY3ZXc4bng5MjZzbHBkZHEwYzJsOCZlcD12MV9naWZzX3NlYXJjaCZjdT1n/XUFPGrX5Zis6Y/giphy.gif">
 
 <!-- ✅ 입력 -->
 <div class="input-box">
@@ -163,10 +163,8 @@
 <div id="pwMessage"></div>
 
 <script>
-/* ✅ 누적 점수 로드 */
 let totalScore = Number(localStorage.getItem("sunhuScore")) || 0;
 
-/* ✅ 요소 */
 const userInput = document.getElementById("userInput");
 const result = document.getElementById("resultText");
 const scoreDisplay = document.getElementById("totalScoreText");
@@ -177,7 +175,6 @@ const helpBtn = document.getElementById("helpBtn");
 const pwInput = document.getElementById("pwInput");
 const pwMessage = document.getElementById("pwMessage");
 
-/* ✅ 상점 단어 리스트 */
 const positiveWords = [
     "점약",
     "감사합니다","고맙습니다","감사해요","고마워요",
@@ -189,13 +186,10 @@ const positiveWords = [
     "미인","예뻐요","예쁘다","짱"
 ];
 
-/* ✅ 초기 렌더 */
 updateGraph();
 updateScoreText();
 
-/* ✅ Enter 입력 시만 처리 */
 userInput.addEventListener("keypress", (e) => {
-
     if (e.key !== "Enter") return;
 
     const text = userInput.value.trim();
@@ -223,10 +217,9 @@ userInput.addEventListener("keypress", (e) => {
         penalty = -50000;
         result.textContent = "벌점 -5만점입니다";
         result.style.color = "red";
-    }     
+    }
     else {
-        result.textContent =
-        "이 말을 들었을 때 선누가 마상일지 기분 좋을지는 알아서 생각하세요";
+        result.textContent = "이 말을 들었을 때 선누가 마상일지 기분 좋을지는 알아서 생각하세요";
         result.style.color = "black";
         return;
     }
@@ -240,7 +233,6 @@ userInput.addEventListener("keypress", (e) => {
     if (totalScore <= -1000000) triggerExplosion();
 });
 
-/* ✅ 텍스트 변환 */
 function updateScoreText() {
     if (totalScore > 0) {
         scoreDisplay.textContent = `누적 상점: +${totalScore}점`;
@@ -249,7 +241,6 @@ function updateScoreText() {
     }
 }
 
-/* ✅ 그래프 색 전환 & 높이 */
 function updateGraph() {
     let absScore = Math.min(Math.abs(totalScore), 1000000);
     let percent = absScore / 1000000 * 100;
@@ -258,13 +249,11 @@ function updateGraph() {
     bar.style.background = totalScore >= 0 ? "#4d8bff" : "#ff4d4d";
 }
 
-/* ✅ 폭탄 */
 function triggerExplosion() {
     cliffGif.style.display = "none";
     bombGif.style.display = "block";
 }
 
-/* ✅ PASSWORD */
 helpBtn.addEventListener("click", () => {
     helpBtn.style.display = "none";
     pwInput.style.display = "block";
@@ -291,7 +280,6 @@ pwInput.addEventListener("keypress", (e) => {
     pwInput.value = "";
 });
 
-/* ✅ 포커스 벗어나면 원상복귀 */
 pwInput.addEventListener("blur", () => {
     pwInput.style.display = "none";
     helpBtn.style.display = "block";
@@ -301,4 +289,3 @@ pwInput.addEventListener("blur", () => {
 
 </body>
 </html>
-
